@@ -7,7 +7,7 @@ set -eux
 # Install Docker CE
 ## Set up the repository
 ### Install required packages.
-yum install yum-utils device-mapper-persistent-data lvm2
+yum install -y yum-utils device-mapper-persistent-data lvm2
 
 ### Add Docker repository.
 yum-config-manager \
