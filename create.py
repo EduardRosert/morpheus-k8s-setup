@@ -24,7 +24,7 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
 
     req = {
         'instance': {
-            'name': 'test-from-api-with-storage',
+            'name': 'test-from-api-with-storage-3',
             'site': {
                 'id': 6,
             },
@@ -39,32 +39,30 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
             }
         },
         'volumes': [
-            # {
-            #     'id': -1,
-            #     'name': 'root',
-            #     'rootVolume': True,
-            #     'size': 20,
-            #     'sizeId': None,
-            #     'storageType': 4,
-            # },
             {
-                'id': -1,
-                'name': 'k8s-data-1',
-                'rootVolume': False,
+                # /dev/vda
+                #'id': -1,
+                'name': 'k8s-root',
+                'rootVolume': True,
                 'size': 25,
-                'sizeId': None,
-                'storageType': 4,
             },
             {
-                'id': -1,
-                'maxIOPS': None,
-                'maxStorage': 0,
-                'minStorage': None,
-                'name': 'k8s-data-2',
+                # /dev/vdb
+                #'id': -1,
+                'name': 'k8s-data-1',
                 'rootVolume': False,
-                'size': 25,
-                'storageType': 4,
-            }
+                'size': 10,
+                #'sizeId': None,
+                #'storageType': 4,
+            },
+            # {
+            #     # /dev/vdc
+            #     #'id': -1,
+            #     'name': 'k8s-data-2',
+            #     'rootVolume': False,
+            #     'size': 15,
+            #     #'storageType': 4,
+            # }
         ],
         'networkInterfaces': [
             {
