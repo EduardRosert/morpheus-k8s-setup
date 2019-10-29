@@ -24,7 +24,7 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
 
     req = {
         'instance': {
-            'name': 'test-from-api-with-storage-3',
+            'name': 'test-from-api-with-storage-4',
             'site': {
                 'id': 6,
             },
@@ -51,7 +51,7 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
                 #'id': -1,
                 'name': 'k8s-data-1',
                 'rootVolume': False,
-                'size': 10,
+                'size': 100,
                 #'sizeId': None,
                 #'storageType': 4,
             },
