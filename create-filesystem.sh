@@ -3,6 +3,9 @@
 # fail fast and show errors
 set -eux
 
+# install tools
+yum install -y lvm2
+
 # volume setup
 pvcreate /dev/vdb
 
