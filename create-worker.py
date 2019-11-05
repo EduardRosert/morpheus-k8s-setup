@@ -10,6 +10,7 @@
 #    MORPHEUS_PASS=<your morpheus password>
 #    MORPHEUS_URL=<morpheus service url, e.g. https://morpheus.example.com>
 #    MORPHEUS_SSLVERIFY=<true to verify ssl cert or false>
+#    WORKERS=<number of worker nodes, e.g. 16 (default 2)>
 
 import os
 import json
@@ -19,12 +20,14 @@ import sys
 import pymorpheus
 
 
-def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslverify=True):
+def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslverify=True, workers=2):
     c = pymorpheus.MorpheusClient(morpheusUrl, username=username, password=password, sslverify=sslverify)
+
+    name_pattern = 'k8s-worker-{0:0' + str(len(str(workers-1))) + 'd}' # e.g. 'k8s-worker-{0:02d}'
 
     req = {
         'instance': {
-            'name': 'k8s-worker-1',
+            'name': name_pattern.format(0),
             'site': {
                 'id': 6,
             },
@@ -85,12 +88,14 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
         'taskSetName': 'Install Kubernetes Worker',
     }
 
-    res = c.call(
-        'post',
-        'instances',
-        jsonpayload=json.dumps(req)
-    )
-    pprint.pprint(res)
+    for i in range(workers):
+        req['instance']['name'] = name_pattern.format(i)
+        res = c.call(
+            'post',
+            'instances',
+            jsonpayload=json.dumps(req)
+        )
+        pprint.pprint(res)
 
 
 if __name__ == '__main__':
@@ -98,5 +103,6 @@ if __name__ == '__main__':
     password = os.environ.get('MORPHEUS_PASS', "<env 'MORPHEUS_PASS' not set>")
     url = os.environ.get('MORPHEUS_URL', "https://morpheus.ecmwf.int")
     sslverify = True if os.environ.get('MORPHEUS_SSLVERIFY', "true").lower() == "true" else False
+    workers = os.environ.get('WORKERS', "2")
     print("Logging on to '{0}' with user '{1}' ...".format(url, username))
-    sys.exit(main(username, password, url, sslverify))
+    sys.exit(main(username, password, url, sslverify, int(workers)))
