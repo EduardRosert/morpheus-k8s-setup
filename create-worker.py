@@ -24,7 +24,7 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
 
     req = {
         'instance': {
-            'name': 'test-from-api-k8s-controller',
+            'name': 'k8s-worker-0',
             'site': {
                 'id': 6,
             },
@@ -35,7 +35,9 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
                 'id': 1177,
             },
             'plan': {
-                'id': 468,
+            #    'id': 468, # m1.medium-large
+                 'id': 472, # m1.xlarge
+            #    'id': 473, #m1.large-xlarge
             }
         },
         'volumes': [
@@ -80,7 +82,7 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
         # ],
         'zoneId': 9,
         'securityGroup': 'ssh-http-https',
-        'taskSetName': 'Install Kubernetes Controller',
+        'taskSetName': 'Install Kubernetes Worker',
     }
 
     res = c.call(
