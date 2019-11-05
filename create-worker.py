@@ -24,7 +24,7 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
 
     req = {
         'instance': {
-            'name': 'k8s-worker-0',
+            'name': 'k8s-worker-1',
             'site': {
                 'id': 6,
             },

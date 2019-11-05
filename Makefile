@@ -11,3 +11,4 @@ install-requirements-worker:
 	./disable-swap.sh
 	./disable-ipv6.sh
 	./install-requirements.sh
+	./setup-worker.sh
