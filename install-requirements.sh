@@ -79,11 +79,28 @@ net.ipv4.ip_forward = 1
 EOF
 sysctl --system
 
+# Load IPVS modules.
+cat > /etc/modules-load.d/kubernetes.conf <<EOF
+ip_vs_rr
+ip_vs_wrr
+ip_vs_sh
+ip_vs
+EOF
+
+modprobe ip_vs_rr
+modprobe ip_vs_wrr
+modprobe ip_vs_sh
+modprobe ip_vs
+
+
 # install some tools
 yum install -y \
     tcpdump \
     bridge-utils \
-    strace
+    strace \
+    ipvsadm
+  
+
 
 # ca of morpheus.ecmwf.int
 cat > /etc/pki/ca-trust/source/anchors/QuoVadis_Global_SSL_ICA_G3.pem <<EOF

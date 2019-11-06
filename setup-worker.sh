@@ -26,6 +26,10 @@ discovery:
 nodeRegistration:
   criSocket: /var/run/dockershim.sock
   name: $hostname
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: ipvs
 EOF
 
 # Initialise Kubernetes components.
