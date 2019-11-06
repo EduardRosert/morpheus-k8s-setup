@@ -60,14 +60,14 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
                 #'sizeId': None,
                 #'storageType': 4,
             },
-            # {
-            #     # /dev/vdc
-            #     #'id': -1,
-            #     'name': 'k8s-data-2',
-            #     'rootVolume': False,
-            #     'size': 15,
-            #     #'storageType': 4,
-            # }
+            {
+                # /dev/vdc
+                #'id': -1,
+                'name': 'k8s-data-2',
+                'rootVolume': False,
+                'size': 100,
+                #'storageType': 4,
+            }
         ],
         'networkInterfaces': [
             {
@@ -84,7 +84,7 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
         #     }
         # ],
         'zoneId': 9,
-        'securityGroup': 'ssh-http-https',
+        'securityGroup': 'DWD-allowAll',
         'taskSetName': 'Install Kubernetes Worker',
     }
 
