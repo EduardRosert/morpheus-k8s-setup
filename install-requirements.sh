@@ -85,12 +85,14 @@ ip_vs_rr
 ip_vs_wrr
 ip_vs_sh
 ip_vs
+nf_conntrack_ipv4
 EOF
 
 modprobe ip_vs_rr
 modprobe ip_vs_wrr
 modprobe ip_vs_sh
 modprobe ip_vs
+modprobe nf_conntrack_ipv4
 
 
 # install some tools
