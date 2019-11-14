@@ -4,7 +4,7 @@
 set -eux
 
 # install tools
-yum install -y lvm2
+apt install -y lvm2
 
 # volume setup
 pvcreate /dev/vdb

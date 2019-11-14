@@ -5,20 +5,24 @@ set -eux
 
 # from https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
 # Install Docker CE
-## Set up the repository
-### Install required packages.
-yum install -y yum-utils device-mapper-persistent-data lvm2
+## Set up the repository:
+### Install packages to allow apt to use a repository over HTTPS
+apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common -y
 
-### Add Docker repository.
-yum-config-manager \
-  --add-repo \
-  https://download.docker.com/linux/centos/docker-ce.repo
+# install gpg-agent
+apt-get install gpg-agent -y
+
+### Add Docker’s official GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+### Add Docker apt repository.
+add-apt-repository \
+  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) \
+  stable"
 
 ## Install Docker CE.
-yum update -y && yum install docker-ce-18.06.2.ce -y
-
-## Create /etc/docker directory.
-mkdir -p /etc/docker
+apt-get update -y && apt-get install docker-ce=18.06.2~ce~3-0~ubuntu -y
 
 # Setup daemon.
 cat > /etc/docker/daemon.json <<EOF
@@ -28,37 +32,25 @@ cat > /etc/docker/daemon.json <<EOF
   "log-opts": {
     "max-size": "100m"
   },
-  "storage-driver": "overlay2",
-  "storage-opts": [
-    "overlay2.override_kernel_check=true"
-  ]
+  "storage-driver": "overlay2"
 }
 EOF
 
 mkdir -p /etc/systemd/system/docker.service.d
 
-# Restart Docker
+# Restart docker.
 systemctl daemon-reload
 systemctl restart docker
 
 ## Installing kubeadm, kubelet and kubectl
-cat <<EOF > /etc/yum.repos.d/kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+sudo apt-get update -y && sudo apt-get install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
-
-# Set SELinux in permissive mode (effectively disabling it)
-setenforce 0
-sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
-
-yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
-
-systemctl enable --now kubelet
+sudo apt-get update -y
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
 
 
 # enable module at boot
@@ -96,7 +88,7 @@ modprobe nf_conntrack_ipv4
 
 
 # install some tools
-yum install -y \
+apt-get install -y \
     tcpdump \
     bridge-utils \
     strace \
@@ -105,7 +97,7 @@ yum install -y \
 
 
 # ca of morpheus.ecmwf.int
-cat > /etc/pki/ca-trust/source/anchors/QuoVadis_Global_SSL_ICA_G3.pem <<EOF
+cat > /usr/local/share/ca-certificates/QuoVadis_Global_SSL_ICA_G3.pem <<EOF
 -----BEGIN CERTIFICATE-----
 MIIGFzCCA/+gAwIBAgIUftbnnMmtgcTIGT75XUQodw40ExcwDQYJKoZIhvcNAQEL
 BQAwSDELMAkGA1UEBhMCQk0xGTAXBgNVBAoTEFF1b1ZhZGlzIExpbWl0ZWQxHjAc
@@ -144,5 +136,5 @@ SXKJxv/hFmNgEOvOlaFsXX1dbKg1v+C1AzKAFdiuAIa62JzASiEhigqNSdqdTsOh
 EOF
 
 #update trust
-update-ca-trust
+update-ca-certificates
 

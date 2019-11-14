@@ -29,15 +29,17 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
                 'id': 6,
             },
             'instanceType': {
-                'code': 'ewc',
+                # 'code': 'ewc', # CentOS 7.5, id: 75
+                'code': 'UBU1804' # Ubuntu 18.04, id: 77
             },
             'layout': {
-                'id': 1177,
+                #'id': 1177 # CentOS 7.5
+                'id': 1213 # Ubuntu 18.04
             },
             'plan': {
-            #    'id': 468, # m1.medium-large
+                'id': 468, # m1.medium-large
             #    'id': 472, # m1.xlarge
-                'id': 473, #m1.large-xlarge
+            #    'id': 473, #m1.large-xlarge
             }
         },
         'volumes': [
