@@ -19,4 +19,12 @@ export KUBE_API_ADDRESS=#<your controller ip goes here>
 
 git clone https://github.com/EduardRosert/morpheus-k8s-setup.git
 cd morpheus-k8s-setup
+
+# Check the os and switch to the right branch
+if [  -n "$(uname -a | grep Ubuntu)" ]; then
+    git checkout ubuntu # Ubuntu
+else
+    git checkout master # CentOS
+fi 
+
 make install-requirements-worker
