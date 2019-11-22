@@ -16,14 +16,47 @@ import os
 import json
 import pprint
 import sys
-
+import argparse
 import pymorpheus
 
+parser = argparse.ArgumentParser(
+    description='A tool to create kubernetes controller or worker nodes in your morpheus instance.',
+    add_help=True)
+
+parser.add_argument('-m', '--morpheus-url',
+                    metavar="https://morpheus.example.com",
+                    dest='url',
+                    type=str,
+                    required=False,
+                    help='the url of your morpheus instance')
+
+parser.add_argument('-s', '--ssl-verify',
+                    choices=["true", "false"],
+                    dest='sslverify',
+                    default="true",
+                    type=str,
+                    required=False,
+                    help='verify SSL certificate (default: true)')
+
+parser.add_argument('-u', '--user',
+                    metavar="your_username",
+                    dest='username',
+                    type=str,
+                    required=False,
+                    help='your morpheus username')
+
+parser.add_argument('-p', '--pass',
+                    metavar="your_password",
+                    dest='password',
+                    type=str,
+                    required=False,
+                    help='your morpheus password')
 
 def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslverify=True, workers=2):
     c = pymorpheus.MorpheusClient(morpheusUrl, username=username, password=password, sslverify=sslverify)
 
-    name_pattern = 'k8s-worker-{0:0' + str(len(str(workers-1))) + 'd}' # e.g. 'k8s-worker-{0:02d}'
+    numdigits = str(len(str(workers-1))) # number of digits for worker number, e.g. 3 for 199 workers
+    name_pattern = 'k8s-worker-{0:0' + numdigits + 'd}' # e.g. 'k8s-worker-{0:02d}'
 
     req = {
         'instance': {
@@ -101,10 +134,43 @@ def main(username, password, morpheusUrl = "https://morpheus.ecmwf.int", sslveri
 
 
 if __name__ == '__main__':
-    username = os.environ.get('MORPHEUS_USER', "<env 'MORPHEUS_USER' not set>")
-    password = os.environ.get('MORPHEUS_PASS', "<env 'MORPHEUS_PASS' not set>")
-    url = os.environ.get('MORPHEUS_URL', "https://morpheus.ecmwf.int")
-    sslverify = True if os.environ.get('MORPHEUS_SSLVERIFY', "true").lower() == "true" else False
-    workers = os.environ.get('WORKERS', "2")
+
+    # try read from env
+    username = os.environ.get('MORPHEUS_USER', None)
+    password = os.environ.get('MORPHEUS_PASS', None)
+    url = os.environ.get('MORPHEUS_URL', None)
+    sslverify = False if os.environ.get('MORPHEUS_SSLVERIFY', "true").lower() == "false" else True
+    workers = os.environ.get('WORKERS', "1")
+
+    # override env from explicit command line options
+    args = parser.parse_args()
+    if args.sslverify is not None:
+        sslverify = False if args.sslverify == "false" else True
+
+    if args.url is not None:
+        url = args.url
+    
+    if args.username is not None:
+        username = args.username
+    
+    if args.password is not None:
+        password = args.password
+
+
+    # if options unset, as for input from stdin
+    if sslverify:
+        print("SSL certificate verification: ENABLED")
+    else:
+        print("SSL certificate verification: DISABLED")
+
+    if url is None:
+        url = input("Morpheus URL: ")
+
+    if username is None:
+        username = input("Username ({}): ".format(url))
+
+    if password is None:
+        password = input("Password ({}): ".format(username))
+
     print("Logging on to '{0}' with user '{1}' ...".format(url, username))
     sys.exit(main(username, password, url, sslverify, int(workers)))
